@@ -42,8 +42,3 @@ flood-detection/
 
 ## Results
 TBD
-
-
-## Author
-Kevin Levy — PhD Astrophysicist (University of Melbourne)  
-[LinkedIn](#) | [GitHub](#)
