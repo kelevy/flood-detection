@@ -23,6 +23,7 @@ scalable cloud infrastructure.
 - **Climate analysis:** ERA5 reanalysis data, xarray, scipy
 
 ## Project Structure
+```
 flood-detection/
 ├── data/               # raw and processed image tiles
 ├── models/             # saved model weights
@@ -37,11 +38,7 @@ flood-detection/
 ├── .gitignore
 ├── requirements.txt
 └── README.md
+```
 
 ## Results
 TBD
-
-
-## Author
-Kevin Levy — PhD Astrophysicist (University of Melbourne)  
-[LinkedIn](#) | [GitHub](#)
