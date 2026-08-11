@@ -1,0 +1,16 @@
+torch
+torchvision
+segmentation-models-pytorch
+rasterio
+numpy
+matplotlib
+albumentations
+scikit-learn
+fastapi
+uvicorn
+python-dotenv
+tqdm
+xarray
+scipy
+google-cloud-storage
+google-cloud-aiplatform
