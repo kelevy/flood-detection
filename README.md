@@ -23,22 +23,7 @@ scalable cloud infrastructure.
 - **Climate analysis:** ERA5 reanalysis data, xarray, scipy
 
 ## Project Structure
-```
-flood-detection/
-├── data/               # raw and processed image tiles
-├── models/             # saved model weights
-├── notebooks/          # EDA and evaluation notebooks
-├── src/                # training and preprocessing code
-│   ├── dataset.py      # PyTorch dataset class
-│   ├── model.py        # U-Net model
-│   ├── train.py        # training loop
-│   └── evaluate.py     # metrics
-├── api/                # FastAPI inference app
-│   └── app.py
-├── .gitignore
-├── requirements.txt
-└── README.md
-```
+TBD
 
 ## Results
 TBD
