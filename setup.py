@@ -1,11 +1,16 @@
 from setuptools import setup, find_packages
 
-install_requires=[
-    "torch",
-    "torchvision",
-    "segmentation-models-pytorch",
-    "rasterio",
-    "numpy",
-    "tqdm",
-    "safetensors<0.4",
-],
+setup(
+    name="flood_detection_trainer",
+    version="0.1",
+    packages=find_packages(),
+    install_requires=[
+        "torch",
+        "torchvision",
+        "segmentation-models-pytorch",
+        "rasterio",
+        "numpy",
+        "tqdm",
+        "safetensors<0.4",
+    ],
+)
