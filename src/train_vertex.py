@@ -20,8 +20,8 @@ import torch.nn as nn
 from torch.utils.data import DataLoader, random_split
 from tqdm import tqdm
 
-from dataset import Sen1Floods11Dataset
-from model import build_model
+from src.dataset import Sen1Floods11Dataset
+from src.model import build_model
 
 
 def download_data_from_gcs(bucket_name, local_dir="/tmp/data"):
