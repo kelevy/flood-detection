@@ -1,0 +1,17 @@
+Flood Detection Model Evaluation
+========================================
+
+Mean IoU: 0.7901
+
+water:
+  precision: 0.7608
+  recall: 0.7909
+  f1: 0.7756
+  iou: 0.6334
+
+not_water:
+  precision: 0.9750
+  recall: 0.9704
+  f1: 0.9727
+  iou: 0.9469
+

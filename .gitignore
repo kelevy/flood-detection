@@ -2,7 +2,10 @@
 *.json
 data/
 models/
+dist/
 __pycache__/
 *.pt
 *.pth
+*.egg-info/
+.ipynb_checkpoints/
 .DS_Store
