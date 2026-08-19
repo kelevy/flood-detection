@@ -73,7 +73,9 @@ def load_trained_model(checkpoint_path, device):
     return model
 
 
-def get_device():
+def get_device(force_cpu=False):
+    if force_cpu:
+        return torch.device("cpu")
     if torch.cuda.is_available():
         return torch.device("cuda")
     elif torch.backends.mps.is_available():
@@ -86,9 +88,10 @@ def main():
     parser.add_argument("--checkpoint", type=str, default="../models/best_model.pt")
     parser.add_argument("--batch-size", type=int, default=8)
     parser.add_argument("--output-dir", type=str, default="../results")
+    parser.add_argument("--force-cpu", action="store_true", help="Force CPU evaluation for reproducible results (MPS has known non-determinism)")
     args = parser.parse_args()
 
-    device = get_device()
+    device = get_device(force_cpu=args.force_cpu)
     print(f"Using device: {device}")
 
     model = load_trained_model(args.checkpoint, device)
