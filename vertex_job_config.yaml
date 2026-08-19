@@ -1,6 +1,6 @@
 workerPoolSpecs:
   - machineSpec:
-      machineType: n1-standard-4
+      machineType: n1-standard-8
     replicaCount: 1
     pythonPackageSpec:
       executorImageUri: us-docker.pkg.dev/vertex-ai/training/pytorch-gpu.1-13:latest
@@ -9,5 +9,5 @@ workerPoolSpecs:
       pythonModule: src.train_vertex
       args:
         - --bucket=flood-detection-data
-        - --epochs=3
+        - --epochs=15
         - --batch-size=8
