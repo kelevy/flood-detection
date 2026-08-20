@@ -1,0 +1,9 @@
+torch
+torchvision
+segmentation-models-pytorch
+rasterio
+numpy
+fastapi
+uvicorn
+python-multipart
+safetensors<0.4
