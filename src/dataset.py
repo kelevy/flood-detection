@@ -89,7 +89,7 @@ class Sen1Floods11Dataset(Dataset):
 
 
 if __name__ == "__main__":
-    # Quick sanity check — run this file directly to verify the dataset loads
+    # Quick sanity check
     s1_dir = "data/sen1floods11/v1.1/data/flood_events/HandLabeled/S1Hand"
     label_dir = "data/sen1floods11/v1.1/data/flood_events/HandLabeled/LabelHand"
 
