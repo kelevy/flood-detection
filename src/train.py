@@ -2,7 +2,7 @@
 Training script for flood segmentation U-Net on Sen1Floods11.
 
 Handles:
-    - train/val split
+    - train/val/test split (
     - masking out "no data" pixels (label == -1) from the loss
     - cross-entropy loss
     - IoU metric tracking
@@ -12,10 +12,10 @@ Handles:
 import os
 import torch
 import torch.nn as nn
-from torch.utils.data import DataLoader, random_split
+from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-from dataset import Sen1Floods11Dataset
+from dataset import Sen1Floods11Dataset, get_splits
 from model import build_model
 
 
@@ -26,7 +26,6 @@ CHECKPOINT_DIR = "../models"
 BATCH_SIZE = 8
 NUM_EPOCHS = 20
 LEARNING_RATE = 1e-4
-VAL_SPLIT = 0.2
 SEED = 42
 
 
@@ -100,14 +99,12 @@ def main():
 
     # ---- Data ----
     full_dataset = Sen1Floods11Dataset(S1_DIR, LABEL_DIR)
-    val_size = int(len(full_dataset) * VAL_SPLIT)
-    train_size = len(full_dataset) - val_size
-
-    generator = torch.Generator().manual_seed(SEED)
-    train_ds, val_ds = random_split(
-        full_dataset, [train_size, val_size], generator=generator
+    train_ds, val_ds, test_ds = get_splits(full_dataset, seed=SEED)
+    print(
+        f"Train samples: {len(train_ds)}, "
+        f"Val samples: {len(val_ds)}, "
+        f"Test samples: {len(test_ds)} (held out, not used here)"
     )
-    print(f"Train samples: {len(train_ds)}, Val samples: {len(val_ds)}")
 
     train_loader = DataLoader(
         train_ds, batch_size=BATCH_SIZE, shuffle=True, num_workers=2
@@ -143,6 +140,7 @@ def main():
             print(f"  -> New best model saved (IoU: {best_iou:.4f})")
 
     print(f"Training complete. Best Val IoU: {best_iou:.4f}")
+    print("Run evaluate.py separately to get final metrics on the held-out test set.")
 
 
 if __name__ == "__main__":

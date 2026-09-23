@@ -5,7 +5,7 @@ and writing checkpoints back to GCS.
 
 Handles:
     - downloading data from GCS at job start
-    - train/val split
+    - train/val/test split 
     - masking out "no data" pixels (label == -1) from the loss
     - cross-entropy loss
     - IoU metric tracking
@@ -17,10 +17,10 @@ import argparse
 import subprocess
 import torch
 import torch.nn as nn
-from torch.utils.data import DataLoader, random_split
+from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-from src.dataset import Sen1Floods11Dataset
+from src.dataset import Sen1Floods11Dataset, get_splits
 from src.model import build_model
 
 
@@ -120,16 +120,13 @@ def main():
 
     # ---- Data ----
     s1_dir, label_dir = download_data_from_gcs(args.bucket)
-
     full_dataset = Sen1Floods11Dataset(s1_dir, label_dir)
-    val_size = int(len(full_dataset) * 0.2)
-    train_size = len(full_dataset) - val_size
-
-    generator = torch.Generator().manual_seed(42)
-    train_ds, val_ds = random_split(
-        full_dataset, [train_size, val_size], generator=generator
+    train_ds, val_ds, test_ds = get_splits(full_dataset, seed=42)
+    print(
+        f"Train samples: {len(train_ds)}, "
+        f"Val samples: {len(val_ds)}, "
+        f"Test samples: {len(test_ds)} (held out, not used here)"
     )
-    print(f"Train samples: {len(train_ds)}, Val samples: {len(val_ds)}")
 
     train_loader = DataLoader(
         train_ds, batch_size=args.batch_size, shuffle=True, num_workers=4
@@ -165,6 +162,7 @@ def main():
             print(f"  -> New best model saved and uploaded (IoU: {best_iou:.4f})")
 
     print(f"Training complete. Best Val IoU: {best_iou:.4f}")
+    print("Run evaluate.py separately to get final metrics on the held-out test set.")
 
 
 if __name__ == "__main__":

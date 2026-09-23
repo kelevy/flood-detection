@@ -1,8 +1,8 @@
 """
 Evaluation script for the trained flood detection U-Net.
 
-Loads a trained checkpoint, runs inference on the validation split,
-and reports segmentation metrics: IoU, F1, precision, recall.
+Loads a trained checkpoint, runs inference on the held-out TEST split, and reports
+segmentation metrics: IoU, F1, precision, recall.
 
 Usage:
     python evaluate.py --checkpoint ../models/best_model.pt
@@ -11,25 +11,24 @@ Usage:
 import os
 import argparse
 import torch
-from torch.utils.data import DataLoader, random_split
+from torch.utils.data import DataLoader
 
-from dataset import Sen1Floods11Dataset
+from dataset import Sen1Floods11Dataset, get_splits
 from model import build_model
 
 
 S1_DIR = "../data/sen1floods11/v1.1/data/flood_events/HandLabeled/S1Hand"
 LABEL_DIR = "../data/sen1floods11/v1.1/data/flood_events/HandLabeled/LabelHand"
-VAL_SPLIT = 0.2
-SEED = 42  # must match train.py / train_vertex.py so we evaluate on the SAME val split
+SEED = 42  # must match train.py / train_vertex.py so train/val/test splits align
 
 
-def get_val_dataset():
+def get_test_dataset():
+    """
+    Returns the held-out test set.
+    """
     full_dataset = Sen1Floods11Dataset(S1_DIR, LABEL_DIR)
-    val_size = int(len(full_dataset) * VAL_SPLIT)
-    train_size = len(full_dataset) - val_size
-    generator = torch.Generator().manual_seed(SEED)
-    _, val_ds = random_split(full_dataset, [train_size, val_size], generator=generator)
-    return val_ds
+    _, _, test_ds = get_splits(full_dataset, seed=SEED)
+    return test_ds
 
 
 def compute_metrics(preds, labels, ignore_index=-1):
@@ -97,15 +96,15 @@ def main():
     model = load_trained_model(args.checkpoint, device)
     print(f"Loaded checkpoint from {args.checkpoint}")
 
-    val_ds = get_val_dataset()
-    val_loader = DataLoader(val_ds, batch_size=args.batch_size, shuffle=False, num_workers=2)
-    print(f"Evaluating on {len(val_ds)} validation samples")
+    test_ds = get_test_dataset()
+    test_loader = DataLoader(test_ds, batch_size=args.batch_size, shuffle=False, num_workers=2)
+    print(f"Evaluating on {len(test_ds)} held-out test samples (never used in training or checkpoint selection)")
 
     all_preds = []
     all_labels = []
 
     with torch.no_grad():
-        for images, labels in val_loader:
+        for images, labels in test_loader:
             images = images.to(device)
             outputs = model(images)
             preds = torch.argmax(outputs, dim=1).cpu()
@@ -118,7 +117,7 @@ def main():
 
     metrics = compute_metrics(all_preds, all_labels)
 
-    print("\n=== Evaluation Results ===")
+    print("\n=== Evaluation Results (held-out test set) ===")
     print(f"Mean IoU: {metrics['mean_iou']:.4f}")
     print("\nWater class:")
     print(f"  IoU:       {metrics['water']['iou']:.4f}")
@@ -134,7 +133,7 @@ def main():
     os.makedirs(args.output_dir, exist_ok=True)
     results_path = os.path.join(args.output_dir, "metrics.txt")
     with open(results_path, "w") as f:
-        f.write("Flood Detection Model Evaluation\n")
+        f.write("Flood Detection Model Evaluation (held-out test set)\n")
         f.write("=" * 40 + "\n\n")
         f.write(f"Mean IoU: {metrics['mean_iou']:.4f}\n\n")
         for cls_name in ["water", "not_water"]:

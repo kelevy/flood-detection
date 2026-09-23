@@ -15,7 +15,7 @@ import glob
 import numpy as np
 import rasterio
 import torch
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, random_split
 
 
 class Sen1Floods11Dataset(Dataset):
@@ -88,8 +88,40 @@ class Sen1Floods11Dataset(Dataset):
         return image_tensor, label_tensor
 
 
+def get_splits(full_dataset, train_frac=0.8, val_frac=0.1, seed=42):
+    """
+    Split a dataset into train / validation / test subsets.
+
+    - train: used to update model weights
+    - val: used during training to select the best checkpoint (never
+           backpropagated on, but does influence which checkpoint is kept)
+    - test: held out completely; touched only once, after all training
+            and model selection is finished, to report final metrics
+
+    Args:
+        full_dataset: the full Sen1Floods11Dataset
+        train_frac (float): fraction for training (default 0.8)
+        val_frac (float): fraction for validation (default 0.1)
+                          remainder (default 0.1) goes to test
+        seed (int): random seed for reproducible splits
+
+    Returns:
+        (train_ds, val_ds, test_ds)
+    """
+    n = len(full_dataset)
+    train_size = int(n * train_frac)
+    val_size = int(n * val_frac)
+    test_size = n - train_size - val_size  # remainder, avoids rounding gaps
+
+    generator = torch.Generator().manual_seed(seed)
+    train_ds, val_ds, test_ds = random_split(
+        full_dataset, [train_size, val_size, test_size], generator=generator
+    )
+    return train_ds, val_ds, test_ds
+
+
 if __name__ == "__main__":
-    # Quick sanity check
+    # Sanity check
     s1_dir = "data/sen1floods11/v1.1/data/flood_events/HandLabeled/S1Hand"
     label_dir = "data/sen1floods11/v1.1/data/flood_events/HandLabeled/LabelHand"
 
@@ -99,3 +131,6 @@ if __name__ == "__main__":
     image, label = dataset[0]
     print(f"Image shape: {image.shape}, dtype: {image.dtype}")
     print(f"Label shape: {label.shape}, unique values: {torch.unique(label)}")
+
+    train_ds, val_ds, test_ds = get_splits(dataset)
+    print(f"Train: {len(train_ds)}, Val: {len(val_ds)}, Test: {len(test_ds)}")
