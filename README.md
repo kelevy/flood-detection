@@ -48,7 +48,7 @@ period of inactivity (Cloud Run scales the container to zero when idle).
 
 ## Results
 
-Evaluated on test split (89 chips, 10% of the hand-labeled
+Evaluated on test split (45 chips, 10% of the hand-labeled
 dataset), after 15 epochs of training:
 
 | Metric | Water | Not-water |
