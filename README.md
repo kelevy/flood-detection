@@ -83,8 +83,7 @@ flood-detection/
 ├── models/ # trained checkpoint (not committed)
 ├── notebooks/
 │ ├── 01_eda.ipynb # dataset exploration, class balance
-│ ├── 02_model_evaluation.ipynb # metrics, predictions, error analysis
-│ └── 03_climate_analysis.ipynb # precipitation vs flood extent correlation
+│ └── 02_model_evaluation.ipynb # metrics, predictions, error analysis
 ├── src/
 │ ├── dataset.py # PyTorch Dataset for Sen1Floods11
 │ ├── model.py # U-Net architecture
