@@ -67,17 +67,6 @@ where repeated downsampling in the encoder loses fine spatial detail. See
 `notebooks/02_model_evaluation.ipynb` for full analysis and prediction examples.
 
 
-## Climate Correlation Analysis
-
-A secondary analysis (`notebooks/03_climate_analysis.ipynb`) tests whether
-antecedent precipitation (ERA5 reanalysis, via the Open-Meteo API) correlates
-with detected flood extent across the 10 events with hand-labeled data.
-
-Max single-day precipitation showed a moderate positive correlation with flood
-extent (Pearson r = 0.61, p = 0.064), suggestive but not statistically
-significant given the small sample (n=10). This is an exploratory, single-snapshot
-analysis, not a time-series trend study.
-
 ## Stack
 
 - **Model:** U-Net (PyTorch, `segmentation-models-pytorch`, ResNet34 encoder)
@@ -85,7 +74,6 @@ analysis, not a time-series trend study.
 - **Training:** Google Cloud Vertex AI (custom training job)
 - **Serving:** FastAPI, containerized with Docker, deployed on Google Cloud Run
 - **Storage:** Google Cloud Storage (data, model checkpoints)
-- **Climate data:** ERA5 reanalysis via Open-Meteo Historical Weather API
 
 ## Project structure
 
@@ -172,5 +160,4 @@ gcloud run deploy flood-detection-api \
 - Under-detects small, fragmented water patches (see Results)
 - Individual chip predictions vary in quality; aggregate metrics are a better
   indicator of real-world performance than any single example
-- Climate correlation analysis is exploratory (n=10), not confirmatory
 - Cold-start latency on the deployed API after periods of inactivity
